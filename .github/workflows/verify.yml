@@ -1,0 +1,25 @@
+name: Verify Go backend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.x'
+          cache: false
+      - name: Format Go sources
+        run: gofmt -w api/targets/index.go api/probe/index.go
+      - name: Vet Go functions
+        run: go vet ./api/...
+      - name: Run Go tests
+        run: go test ./...
+      - name: Validate Vercel configuration
+        run: python -m json.tool vercel.json > /dev/null
