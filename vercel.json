@@ -1,14 +1,9 @@
 {
   "version": 2,
-  "cleanUrls": true,
-  "trailingSlash": false,
   "outputDirectory": "public",
   "functions": {
-    "api/**/*.go": { "maxDuration": 30 }
-  },
-  "rewrites": [
-    { "source": "/api/targets", "destination": "/api/targets" },
-    { "source": "/api/probe", "destination": "/api/probe" },
-    { "source": "/", "destination": "/index.html" }
-  ]
+    "api/**/*.go": {
+      "maxDuration": 30
+    }
+  }
 }
