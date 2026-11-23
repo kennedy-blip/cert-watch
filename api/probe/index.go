@@ -82,11 +82,18 @@ func probe(host string, timeoutMs, warningDays int) ProbeResult {
 	conn, err := dialer.DialContext(ctx, "tcp", address)
 	out.TCPMs = time.Since(t).Milliseconds()
 	if err != nil { return fail(fmt.Errorf("TCP connection failed: %w", err)) }
-	_ = conn.Close()
 	t = time.Now()
-	tlsConn, err := tls.DialWithDialer(&dialer, "tcp", address, &tls.Config{ServerName:host, MinVersion:tls.VersionTLS12})
+	tlsConn := tls.Client(conn, &tls.Config{ServerName: host, MinVersion: tls.VersionTLS12})
+	err = tlsConn.HandshakeContext(ctx)
 	out.TLSMs = time.Since(t).Milliseconds()
-	if err != nil { out.TotalMs = time.Since(start).Milliseconds(); if strings.Contains(strings.ToLower(err.Error()), "expired") { out.Status = "EXPIRED" }; return fail(fmt.Errorf("TLS handshake failed: %w", err)) }
+	if err != nil {
+		_ = conn.Close()
+		out.TotalMs = time.Since(start).Milliseconds()
+		if strings.Contains(strings.ToLower(err.Error()), "expired") {
+			out.Status = "EXPIRED"
+		}
+		return fail(fmt.Errorf("TLS handshake failed: %w", err))
+	}
 	defer tlsConn.Close()
 	state := tlsConn.ConnectionState()
 	if len(state.PeerCertificates) == 0 { return fail(fmt.Errorf("Peer did not present a certificate")) }
