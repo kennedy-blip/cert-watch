@@ -3,17 +3,21 @@
 Concurrent TLS certificate, DNS and endpoint-latency monitor built with Go 1.22 and a zero-build Vanilla JavaScript UI.
 
 ## Deploy on Vercel
-Import this repository into Vercel. The static dashboard is served from `public/`; Go functions live under `api/`. No Node build step is required.
+Import this repository into Vercel. The dashboard is served from `public/`; Go serverless functions are under `api/`. No Node runtime, package manager, or frontend build step is required.
 
-## Local development
+## Verification
 ```sh
-go run ./cmd/server
+gofmt -w api/targets/index.go api/probe/index.go
+go vet ./api/...
+go test ./...
+python -m json.tool vercel.json
 ```
-Open http://localhost:8080. (The optional local server is included in the source tree.) Verify with `gofmt -w api/targets/index.go api/probe/index.go`, `go vet ./api/...`, and `go test ./...`.
 
 ## API
 - `GET /api/targets` — seeded and in-memory registered targets
-- `POST /api/targets` — register a hostname (serverless memory is instance-local)
+- `POST /api/targets` — register a hostname
 - `POST /api/probe` — bounded concurrent TLS checks
 
-Probe targets are restricted to public IP ranges after DNS resolution. This protects the deployment from requests to private infrastructure and cloud metadata endpoints. Results are diagnostic snapshots, not a substitute for a full PKI audit.
+**Deployment note:** target registration uses process memory. Vercel may start multiple function instances and recycle them, so custom targets are not durable across cold starts. Add a persistent database before relying on registration as long-term inventory.
+
+Probe targets are restricted to public IP ranges after DNS resolution to prevent requests to private infrastructure and cloud metadata endpoints. Results are diagnostic snapshots, not a substitute for a full PKI audit.
