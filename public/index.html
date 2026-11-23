@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070a12"><meta name="description" content="CertWatch — TLS certificate, DNS and endpoint latency monitoring.">
+  <title>CertWatch — TLS & DNS Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="shell">
+  <header class="topbar"><a class="brand" href="/"><span class="brand-mark">◈</span><span>cert<span class="cyan">watch</span><small>INFRASTRUCTURE OBSERVABILITY</small></span></a><div class="engine"><span class="pulse"></span><span>GO PROBE ENGINE <b>ACTIVE</b></span><span class="engine-sub">CONCURRENT TLS SCANNER READY</span></div><button id="probeAll" class="btn btn-primary">↻ Probe all targets</button></header>
+  <main>
+    <section class="hero"><div><div class="eyebrow"><span class="live-dot"></span> LIVE CERTIFICATE INTELLIGENCE</div><h1>Know before your<br><span>certificates expire.</span></h1><p>Concurrent TLS, DNS and endpoint diagnostics across every environment.</p></div><div class="hero-side"><div class="hero-side-label">LAST SCAN</div><strong id="lastScan">Awaiting probe</strong><div class="hero-side-label mt">SCAN ENGINE <b class="cyan">GO / NET+CRYPTO</b></div></div></section>
+    <section class="stats-grid">
+      <article class="stat-card"><div class="stat-label">MONITORED TARGETS</div><div class="stat-value" id="totalCount">—</div><div class="stat-foot">Registered endpoints</div></article>
+      <article class="stat-card"><div class="stat-label">HEALTHY CERTIFICATES</div><div class="stat-value green" id="healthyCount">—</div><div class="stat-foot"><span class="mini-dot green-bg"></span> Valid & in policy</div></article>
+      <article class="stat-card"><div class="stat-label">EXPIRING SOON</div><div class="stat-value amber" id="expiringCount">—</div><div class="stat-foot"><span class="mini-dot amber-bg"></span> Within warning window</div></article>
+      <article class="stat-card"><div class="stat-label">EXPIRED / FAILED</div><div class="stat-value rose" id="failedCount">—</div><div class="stat-foot"><span class="mini-dot rose-bg"></span> Needs investigation</div></article>
+    </section>
+    <section class="panel runner"><div class="panel-heading"><div><div class="eyebrow">01 / PROBE RUNNER</div><h2>Run diagnostics</h2><p>Enter one or more hostnames to inspect their live TLS endpoints.</p></div><span class="tag">BATCH MODE</span></div>
+      <form id="probeForm"><label for="domains">TARGET DOMAINS</label><textarea id="domains" rows="2" placeholder="example.com&#10;api.github.com&#10;expired.badssl.com"></textarea><div class="form-row"><div><label for="warningDays">WARNING THRESHOLD</label><div class="input-wrap"><input id="warningDays" type="number" min="1" max="365" value="30"><span>days</span></div></div><div><label for="timeoutMs">CONNECTION TIMEOUT</label><div class="input-wrap"><input id="timeoutMs" type="number" min="1000" max="10000" step="500" value="6000"><span>ms</span></div></div><button class="btn btn-primary run-btn" type="submit">Start probe <span>→</span></button></div></form>
+    </section>
+    <section class="panel"><div class="panel-heading matrix-heading"><div><div class="eyebrow">02 / CERTIFICATE MATRIX</div><h2>Endpoint overview</h2><p>Live certificate posture and handshake performance.</p></div><div class="matrix-actions"><button id="badssl" class="btn btn-quiet">Test BadSSL edge cases</button><button id="addTarget" class="btn btn-quiet">＋ Add target</button></div></div><div id="matrix" class="matrix"><div class="empty-state">Loading monitored targets…</div></div></section>
+    <footer><span>◈ CERTWATCH <b>GO ENGINE</b></span><span>DIAGNOSTICS ONLY · UTC TIMESTAMPS · TLS 1.2+</span></footer>
+  </main>
+</div>
+<div id="drawerBackdrop" class="drawer-backdrop"></div><aside id="drawer" class="drawer" aria-hidden="true"><div class="drawer-head"><div><div class="eyebrow">X.509 CERTIFICATE INSPECTOR</div><h2 id="drawerTitle">Endpoint details</h2></div><button id="closeDrawer" class="icon-btn" aria-label="Close">×</button></div><div id="drawerBody"></div></aside>
+<div id="toast" class="toast" role="status"></div>
+<script src="/app.js" defer></script>
+</body></html>
